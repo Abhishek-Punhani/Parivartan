@@ -44,6 +44,12 @@ const campaignSchema = mongoose.Schema(
         "Other",
       ],
     },
+    customErrorReport: {
+      type: String,
+      required: function () {
+        return this.reportErrors == "Other";
+      },
+    },
   },
   {
     collection: "campaigns",
