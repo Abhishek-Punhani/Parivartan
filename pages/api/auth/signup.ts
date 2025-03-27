@@ -1,36 +1,38 @@
 import { createRouter } from "next-connect";
-import bcrypt from "bcrypt";
-import { validateEmail } from "../../../utils/validation";
+import { createUser } from "../../../utils/validation";
 import db from "../../../utils/db";
-import User from "../../../models/User";
-
+import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
+import { encode } from "next-auth/jwt";
 
-interface User {
-  name: string;
-  username: string;
-  phoneNumber: string;
-  email: string;
-  picture?: string;
-  password: string;
-  role: "User" | "Admin" | "SuperAdmin";
-  isVerified: boolean;
-  age: number;
-}
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.post(async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    // await db.connectDb();
-    const user :User = req.body;
-    
-    console.log(user);
-    // await db.disconnectDb();
-    res.json({
+    await db.connectDb();
+    const user: User = req.body;
+
+    const newUser = await createUser(user);
+
+    const token = jwt.sign(
+      { id: newUser._id },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "2d",
+      }
+    );
+
+
+    console.log(newUser);
+
+    await db.disconnectDb();
+    return res.json({
       message: "Register success! Please activate your email to start.",
+      newUser: newUser,
+      token,
     });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 export default router.handler({

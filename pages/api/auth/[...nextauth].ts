@@ -7,6 +7,7 @@ import clientPromise from "./lib/mongoDb";
 import bcrypt from "bcrypt";
 import UserModel from "../../../models/User";
 import db from "../../../utils/db";
+import jwt from "jsonwebtoken";
 db.connectDb();
 
 export const authOptions: NextAuthOptions = {
@@ -49,6 +50,7 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           role: user.role,
           isVerified: user.isVerified,
+          age: user.age,
         };
       },
     }),
