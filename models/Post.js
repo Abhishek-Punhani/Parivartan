@@ -1,7 +1,10 @@
-import mongoose from "mongoose";
+import { type } from "os";
+
+const mongoose = require("mongoose");
+
 const { ObjectId } = mongoose.Schema;
 
-const postSchema = new mongoose.Schema(
+const postSchema = mongoose.Schema(
   {
     title: {
       type: String,
@@ -33,6 +36,7 @@ const postSchema = new mongoose.Schema(
       },
     ],
     pollutionType: {
+      type: String,
       enum: ["Air", "Water", "Soil"],
       required: true,
     },
@@ -65,6 +69,5 @@ const postSchema = new mongoose.Schema(
   }
 );
 
-const Post = mongoose.models.Post || mongoose.model("Post", postSchema);
-export default Post;
-
+const PostModel = mongoose.models.Post || mongoose.model("Post", postSchema);
+export default PostModel;
