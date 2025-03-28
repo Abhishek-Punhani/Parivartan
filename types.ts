@@ -36,3 +36,21 @@ interface LoginInputProps {
   name: string;
   type?: string;
 }
+
+interface SignInProps {
+  providers: any[];
+  callbackUrl: string;
+  csrfToken: string;
+}
+
+interface UserState {
+  login_email: string;
+  login_password: string;
+  name: string;
+  email: string;
+  password: string;
+  conf_password: string;
+  success: string;
+  error: string;
+  login_error: string;
+}
