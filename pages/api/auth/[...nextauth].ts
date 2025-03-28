@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -7,8 +7,19 @@ import clientPromise from "./lib/mongoDb";
 import bcrypt from "bcrypt";
 import UserModel from "../../../models/User";
 import db from "../../../utils/db";
-import jwt from "jsonwebtoken";
 db.connectDb();
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role?: string;
+    };
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
@@ -55,10 +66,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: "/auth/signin",
-    newUser: "/onboarding",
-  },
   callbacks: {
     async signIn({ user, account, profile }) {
       await db.connectDb();
@@ -90,10 +97,27 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
+    async session({ session, token }) {
+      let user = await UserModel.findById(token.sub);
+      if (session?.user) {
+        session.user = {
+          ...session.user,
+          id: token.sub || user._id.toString(),
+          role: user.role || "user",
+        };
+      }
+      token.role = user.role || "user";
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/auth/signin",
+    newUser: "/onboarding",
   },
   session: {
     strategy: "jwt",
   },
+  secret: process.env.JWT_SECRET,
 };
 
 export default NextAuth(authOptions);

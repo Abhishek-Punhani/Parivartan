@@ -30,3 +30,9 @@ interface Campaign {
     upVotes?: string[];
 }
 
+interface LoginInputProps {
+  icon: "user" | "email" | "password";
+  placeholder: string;
+  name: string;
+  type?: string;
+}
