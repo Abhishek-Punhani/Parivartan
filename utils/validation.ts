@@ -61,7 +61,6 @@ export const createUser = async (user: User) => {
     isVerified: false,
   });
 
-  await newUser.save();
 
   return newUser;
 };
