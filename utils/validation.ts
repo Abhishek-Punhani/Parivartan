@@ -1,4 +1,6 @@
 import UserModel from "@/models/User";
+import PostModel from "@/models/Post";
+import CampaignModel from "@/models/Campaign";
 
 export const validateEmail = (email: string) => {
   const regextSt =
@@ -62,4 +64,56 @@ export const createUser = async (user: User) => {
   await newUser.save();
 
   return newUser;
+};
+
+export const createPost = async (post: Post, id: string) => {
+    const { title, content, severity, location, pollutionType } = post;
+
+    if (!title || !content || !severity || !location || !pollutionType) {
+        throw new Error("Please fill all the fields");
+    }
+
+    if (typeof severity !== 'number' || severity < 0 || severity > 100) {
+        throw new Error("Severity should be between 0 and 100");
+    }
+
+    const validPollutionTypes = ["Air", "Water", "Soil"];
+    if (!validPollutionTypes.includes(pollutionType)) {
+        throw new Error("Invalid pollution type");
+    }
+
+    const newPost = new PostModel({
+        title,
+        content,
+        severity,
+        location,
+        pollutionType,
+        author: id,
+        comments: [],
+        upVotes: [],
+    });
+
+    await newPost.save();
+
+
+};
+
+export const createCampaign = async (campaign: Campaign, id: string) => {
+    const { title, description, location, date } = campaign;
+
+    if (!title || !description || !date || !location ) {
+        throw new Error("Please fill all the fields");
+    }
+
+    const newCampaign = new CampaignModel({
+        title,
+        description,
+        location,
+        date,
+        organizer: id,
+        images: [],
+        upVotes: [],
+    });
+
+    await newCampaign.save();
 };

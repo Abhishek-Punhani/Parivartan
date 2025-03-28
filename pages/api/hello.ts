@@ -1,14 +1,21 @@
-import db from "../../utils/db";
-import type { NextApiRequest, NextApiResponse } from "next";
+import db from "@/utils/db";
+import { NextApiRequest, NextApiResponse } from "next";
+import { createRouter } from "next-connect";
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-type Data = {
-  name: string;
-};
+router.post(async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    await db.connectDb();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  await db.connectDb();
-  res.status(200).json({ name: "John Doe" });
-}
+    await db.disconnectDb();
+    return res.send("Hello World");
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+export default router.handler({
+  onError: (err: any, req, res) => {
+    console.error(err.stack);
+    res.status(err.statusCode || 500).end(err.message);
+  },
+});
