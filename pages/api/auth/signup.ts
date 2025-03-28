@@ -3,7 +3,6 @@ import { createUser } from "../../../utils/validation";
 import db from "../../../utils/db";
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
-import { encode } from "next-auth/jwt";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
