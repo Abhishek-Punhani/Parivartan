@@ -16,24 +16,6 @@ import axios from "axios";
 import DotLoaderSpinner from "../components/loaders/dotLoader";
 import Router from "next/router";
 
-interface SignInProps {
-  providers: any[];
-  callbackUrl: string;
-  csrfToken: string;
-}
-
-interface UserState {
-  login_email: string;
-  login_password: string;
-  name: string;
-  email: string;
-  password: string;
-  conf_password: string;
-  success: string;
-  error: string;
-  login_error: string;
-}
-
 const initialValues: UserState = {
   login_email: "",
   login_password: "",
