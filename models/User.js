@@ -12,14 +12,6 @@ const userSchema = mongoose.Schema(
       required: [true, "Please provide your username"],
       unique: [true, "This username is already registered!!"],
     },
-    phoneNumber: {
-      type: String,
-      unique: [true, "This phone number is already registered!!"],
-      validate: [
-        validator.isMobilePhone,
-        "Please provide a valid phone number!",
-      ],
-    },
     email: {
       type: String,
       required: [true, "Please provide your email address"],
@@ -54,13 +46,8 @@ const userSchema = mongoose.Schema(
       default: false,
       required: true,
     },
-    isPhoneNumberVerified: {
-      type: Boolean,
-      default: false,
-    },
     age: {
       type: Number,
-      required: [true, "Please provide your age"],
     },
   },
   {

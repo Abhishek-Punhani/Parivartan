@@ -7,10 +7,7 @@ export const validateEmail = (email: string) => {
     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return regextSt.test(email);
 };
-export const validatePhoneNumber = (phoneNumber: string) => {
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 format
-  return phoneRegex.test(phoneNumber);
-};
+
 
 export const createUser = async (user: User) => {
   if (
@@ -18,8 +15,7 @@ export const createUser = async (user: User) => {
     !user.username ||
     !user.email ||
     !user.password ||
-    !user.age ||
-    !user.phoneNumber
+    !user.age
   ) {
     throw new Error("Please fill all fields");
   }
@@ -31,9 +27,6 @@ export const createUser = async (user: User) => {
 
   if (!validateEmail(user.email)) {
     throw new Error("Invalid email");
-  }
-  if (!validatePhoneNumber(user.phoneNumber)) {
-    throw new Error("Invalid phone number");
   }
 
   if (user.password.length < 6 || user.password.length > 128) {
@@ -55,64 +48,72 @@ export const createUser = async (user: User) => {
     username: user.username,
     email: user.email,
     password: user.password,
-    phoneNumber: user.phoneNumber,
+    picture:
+      user.picture?.trim() !== ""
+        ? user.picture
+        : process.env.DEFAULT_PROFILE_PICTURE,
     age: user.age,
     role: "User",
     isVerified: false,
   });
 
-
   return newUser;
 };
 
+export const getUserByEmail = async (email: string)=> {
+  const user = UserModel.findOne({ email });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
+
 export const createPost = async (post: Post, id: string) => {
-    const { title, content, severity, location, pollutionType } = post;
+  const { title, content, severity, location, pollutionType } = post;
 
-    if (!title || !content || !severity || !location || !pollutionType) {
-        throw new Error("Please fill all the fields");
-    }
+  if (!title || !content || !severity || !location || !pollutionType) {
+    throw new Error("Please fill all the fields");
+  }
 
-    if (typeof severity !== 'number' || severity < 0 || severity > 100) {
-        throw new Error("Severity should be between 0 and 100");
-    }
+  if (typeof severity !== "number" || severity < 0 || severity > 100) {
+    throw new Error("Severity should be between 0 and 100");
+  }
 
-    const validPollutionTypes = ["Air", "Water", "Soil"];
-    if (!validPollutionTypes.includes(pollutionType)) {
-        throw new Error("Invalid pollution type");
-    }
+  const validPollutionTypes = ["Air", "Water", "Soil"];
+  if (!validPollutionTypes.includes(pollutionType)) {
+    throw new Error("Invalid pollution type");
+  }
 
-    const newPost = new PostModel({
-        title,
-        content,
-        severity,
-        location,
-        pollutionType,
-        author: id,
-        comments: [],
-        upVotes: [],
-    });
+  const newPost = new PostModel({
+    title,
+    content,
+    severity,
+    location,
+    pollutionType,
+    author: id,
+    comments: [],
+    upVotes: [],
+  });
 
-    await newPost.save();
-
-
+  await newPost.save();
 };
 
 export const createCampaign = async (campaign: Campaign, id: string) => {
-    const { title, description, location, date } = campaign;
+  const { title, description, location, date } = campaign;
 
-    if (!title || !description || !date || !location ) {
-        throw new Error("Please fill all the fields");
-    }
+  if (!title || !description || !date || !location) {
+    throw new Error("Please fill all the fields");
+  }
 
-    const newCampaign = new CampaignModel({
-        title,
-        description,
-        location,
-        date,
-        organizer: id,
-        images: [],
-        upVotes: [],
-    });
+  const newCampaign = new CampaignModel({
+    title,
+    description,
+    location,
+    date,
+    organizer: id,
+    images: [],
+    upVotes: [],
+  });
 
-    await newCampaign.save();
+  await newCampaign.save();
 };

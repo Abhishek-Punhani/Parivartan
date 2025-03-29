@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log(credentials);
         await db.connectDb();
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing email or password");
@@ -54,43 +55,22 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) {
           throw new Error("Invalid credentials");
         }
+        if (!user.isEmailVerified) {
+          throw new Error("Account not verified , please check your email");
+        }
         return {
           id: user._id.toString(),
           email: user.email,
           name: user.name,
           username: user.username,
           role: user.role,
-          isVerified: user.isVerified,
+          isEmailVerified: user.isEmailVerified,
           age: user.age,
         };
       },
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      await db.connectDb();
-
-      if (account?.provider === "github" || account?.provider === "google") {
-        const existingUser = await UserModel.findOne({ email: user.email });
-        if (!existingUser) {
-          const name = profile?.name || user.name || "Unknown";
-          const emailUserPart = user.email?.split("@")[0] || "user";
-          const randomPassword = Math.random().toString(36).slice(-8);
-          const newUser = new UserModel({
-            name,
-            username: emailUserPart,
-            phoneNumber: "",
-            email: user.email,
-            password: randomPassword,
-            role: "User",
-            isVerified: true,
-            age: 0,
-          });
-          await newUser.save();
-        }
-      }
-      return true;
-    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -112,12 +92,13 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/signin",
-    newUser: "/onboarding",
+    newUser: "/auth/onboarding",
   },
   session: {
     strategy: "jwt",
   },
   secret: process.env.JWT_SECRET,
+  debug: true,
 };
 
 export default NextAuth(authOptions);

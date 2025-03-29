@@ -3,8 +3,8 @@ import { BiLeftArrowAlt } from "react-icons/bi";
 import Link from "next/link";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import LoginInput from "../components/inputs/loginInput";
-import { useState, ChangeEvent } from "react";
+import LoginInput from "../../components/inputs/loginInput";
+import { useState, ChangeEvent, useEffect } from "react";
 import CircledIconBtn from "@/components/buttons/CircledIconButton";
 import {
   getCsrfToken,
@@ -12,8 +12,9 @@ import {
   getSession,
   signIn,
 } from "next-auth/react";
-import DotLoaderSpinner from "../components/loaders/dotLoader";
+import DotLoaderSpinner from "../../components/loaders/dotLoader";
 import Router from "next/router";
+import axios from "axios";
 
 const initialValues: LoginFormProps = {
   email: "",
@@ -31,6 +32,17 @@ export default function SignIn({
   const [user, setUser] = useState<LoginFormProps>(initialValues);
 
   const { email, password, error } = user;
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = await getSession();
+      console.log("session", session);
+      if (session) {
+        Router.push("/");
+      }
+    };
+    checkSession();
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,6 +71,27 @@ export default function SignIn({
       setUser({ ...user, error: res?.error });
     } else {
       Router.push(callbackUrl || "/");
+    }
+  };
+
+  const handleSendEmail = async (email: string) => {
+    try {
+      await axios
+        .post("/api/auth/sendEmail", { email })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+          setUser({
+            ...user,
+            error: err.response?.data?.message || "An error occurred",
+          });
+        });
+
+      setUser({ ...user, error: "", success: "Email sent successfully" });
+    } catch (error: any) {
+      setUser({ ...user, error: error.message });
     }
   };
 
@@ -118,7 +151,28 @@ export default function SignIn({
                   />
                   <CircledIconBtn type="submit" text="Sign in" />
                   {error && (
-                    <span className="text-red-500 text-sm">{error}</span>
+                    <div className="text-red-500 text-sm mt-2">{error}</div>
+                  )}
+
+                  {error &&
+                    error ===
+                      "Account not verified , please check your email" && (
+                      <button
+                        type="button"
+                        className="mt-2 text-blue-500 border-b border-blue-500 pb-[2px] hover:text-blue-700 hover:border-blue-700"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSendEmail(email);
+                        }}
+                      >
+                        Resend Email
+                      </button>
+                    )}
+
+                  {user.success && (
+                    <div className="text-green-500 text-sm mt-2">
+                      {user.success}
+                    </div>
                   )}
                   <div className="text-gray-600 pt-4 text-sm hover:text-blue-500 hover:border-b hover:border-blue-500">
                     <Link href="/auth/forgot">Forgot password?</Link>
@@ -166,6 +220,7 @@ export async function getServerSideProps(context: any) {
   }
   const csrfToken = (await getCsrfToken(context)) || null;
   const rawProviders = await getProviders();
+
   const providers = rawProviders ? Object.values(rawProviders) : [];
   return {
     props: {

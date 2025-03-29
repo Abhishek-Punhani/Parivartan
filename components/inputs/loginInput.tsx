@@ -1,10 +1,10 @@
 import { BiUser } from "react-icons/bi";
 import { SiMinutemailer } from "react-icons/si";
-import { IoKeyOutline } from "react-icons/io5";
+import { IoKeyOutline, IoCalendarNumberOutline } from "react-icons/io5";
 import { ErrorMessage, useField } from "formik";
 
 interface LoginInputProps {
-  icon: "user" | "email" | "password";
+  icon: "user" | "email" | "password" | "age";
   placeholder: string;
   name: string;
   type?: string;
@@ -41,6 +41,12 @@ export default function LoginInput({
           />
         ) : icon === "password" ? (
           <IoKeyOutline
+            className={`w-6 h-6 ${
+              meta.touched && meta.error ? "text-red-500" : "text-gray-400"
+            }`}
+          />
+        ) : icon === "age" ? (
+          <IoCalendarNumberOutline
             className={`w-6 h-6 ${
               meta.touched && meta.error ? "text-red-500" : "text-gray-400"
             }`}

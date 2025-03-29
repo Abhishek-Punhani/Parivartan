@@ -1,7 +1,6 @@
 interface User {
   name: string;
   username: string;
-  phoneNumber: string;
   email: string;
   picture?: string;
   password: string;
@@ -53,6 +52,8 @@ interface SignupFormProps {
   name: string;
   email: string;
   username: string;
+  age: number | null;
+  profilePicture: string;
   password: string;
   conf_password: string;
   success: string;

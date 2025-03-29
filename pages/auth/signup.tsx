@@ -3,9 +3,10 @@ import { BiLeftArrowAlt } from "react-icons/bi";
 import Link from "next/link";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import LoginInput from "../components/inputs/loginInput";
+import LoginInput from "../../components/inputs/loginInput";
 import { useState, ChangeEvent } from "react";
 import CircledIconBtn from "@/components/buttons/CircledIconButton";
+import { uploadFiles } from "@/utils/upload";
 import {
   getCsrfToken,
   getProviders,
@@ -13,8 +14,9 @@ import {
   signIn,
 } from "next-auth/react";
 import axios from "axios";
-import DotLoaderSpinner from "../components/loaders/dotLoader";
+import DotLoaderSpinner from "../../components/loaders/dotLoader";
 import Router from "next/router";
+import Picture from "@/components/inputs/Picture";
 
 const initialValues: SignupFormProps = {
   name: "",
@@ -22,6 +24,8 @@ const initialValues: SignupFormProps = {
   username: "",
   password: "",
   conf_password: "",
+  profilePicture: "",
+  age: null,
   success: "",
   error: "",
 };
@@ -29,8 +33,10 @@ const initialValues: SignupFormProps = {
 export default function SignIn({ providers }: SignInProps) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<SignupFormProps>(initialValues);
+  const [picture, setPicture] = useState<File | null>(null);
+  const [readablePicture, setReadablePicture] = useState("");
 
-  const { name, email, password, conf_password } = user;
+  const { name, email, password, conf_password, username, age, error } = user;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,6 +49,14 @@ export default function SignIn({ providers }: SignInProps) {
       .min(2, "First name must be between 2 and 16 characters.")
       .max(16, "First name must be between 2 and 16 characters.")
       .matches(/^[aA-zZ]/, "Numbers and special characters are not allowed."),
+    username: Yup.string()
+      .required("What's your username?")
+      .min(3, "Username must be between 3 and 16 characters.")
+      .max(16, "Username must be between 3 and 16 characters.")
+      .matches(
+        /^[a-zA-Z0-9._]+$/,
+        "Username can only contain letters, numbers, periods, and underscores."
+      ),
     email: Yup.string()
       .required(
         "You'll need this when you log in and if you ever need to reset your password."
@@ -61,23 +75,30 @@ export default function SignIn({ providers }: SignInProps) {
 
   const signUpHandler = async () => {
     try {
+      let link = "";
       setLoading(true);
+      if (picture) {
+        const uploaded_picture = await uploadFiles([
+          { file: picture, type: "image" },
+        ]);
+        link = uploaded_picture[0].file.secure_url as string;
+        console.log(uploaded_picture);
+        setUser({
+          ...user,
+          profilePicture: uploaded_picture[0].file.secure_url as string,
+        });
+      }
       const { data } = await axios.post("/api/auth/signup", {
         name,
         email,
         password,
+        username,
+        profilePicture: link,
+        age,
       });
       setUser({ ...user, error: "", success: data.message });
       setLoading(false);
-      setTimeout(async () => {
-        const options = {
-          redirect: false,
-          email: email,
-          password: password,
-        };
-        await signIn("credentials", options);
-        Router.push("/");
-      }, 2000);
+      Router.push("/auth/activateEmail");
     } catch (error: any) {
       setLoading(false);
       setUser({ ...user, success: "", error: error.response.data.message });
@@ -113,14 +134,28 @@ export default function SignIn({ providers }: SignInProps) {
               initialValues={{
                 name,
                 email,
+                username,
                 password,
                 conf_password,
+                age,
               }}
               validationSchema={registerValidation}
               onSubmit={signUpHandler}
             >
               {() => (
                 <Form>
+                  <Picture
+                    readablePicture={readablePicture}
+                    setPicture={setPicture}
+                    setReadablePicture={setReadablePicture}
+                  />
+                  <LoginInput
+                    type="text"
+                    name="username"
+                    icon="user"
+                    placeholder="User Name"
+                    onChange={handleChange}
+                  />
                   <LoginInput
                     type="text"
                     name="name"
@@ -129,10 +164,10 @@ export default function SignIn({ providers }: SignInProps) {
                     onChange={handleChange}
                   />
                   <LoginInput
-                    type="text"
-                    name="name"
-                    icon="user"
-                    placeholder="User Name"
+                    type="number"
+                    name="age"
+                    icon="age"
+                    placeholder="Age"
                     onChange={handleChange}
                   />
                   <LoginInput
@@ -156,19 +191,10 @@ export default function SignIn({ providers }: SignInProps) {
                     placeholder="Re-Type Password"
                     onChange={handleChange}
                   />
-                  <div className="my-6">
-                    <label htmlFor="profilePicture" className="block mb-2">
-                      Profile Picture
-                    </label>
-                    <input
-                      type="file"
-                      id="profilePicture"
-                      name="profilePicture"
-                      accept="image/*"
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    />
-                  </div>
                   <CircledIconBtn type="submit" text="Sign up" />
+                  {error && (
+                    <div className="text-red-500 text-sm mt-2">{error}</div>
+                  )}
                 </Form>
               )}
             </Formik>
