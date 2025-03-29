@@ -27,7 +27,7 @@ router.post(async (req, res) => {
     catch (error) {
 
         console.error("Validation error:", error);
-        res.status(500).json({ error: "Internal serverrrr error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 
 });
