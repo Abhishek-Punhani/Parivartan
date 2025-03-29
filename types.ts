@@ -9,15 +9,21 @@ interface User {
   isVerified: boolean;
   age: number;
 }
+
 interface Post {
-    title: string;
-    content: string;
-    severity: number;
-    author?: string;
-    comments?: string[];
-    upVotes?: string[];
-    location: string;
-    pollutionType: "Air" | "Water" | "Soil";
+  _id: string;
+  title: string;
+  content: string;
+  severity: number;
+  author?: string;
+  comments?: string[];
+  upVotes?: string[];
+  location: string;
+  pollutionType: "Air" | "Water" | "Soil";
+  reportError?: string;
+  customErrorReport?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Campaign {
@@ -54,3 +60,4 @@ interface UserState {
   error: string;
   login_error: string;
 }
+
