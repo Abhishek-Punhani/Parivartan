@@ -208,7 +208,7 @@ export default function SignIn({
           </div>
         </div>
       </div>
-      <Footer country={{ name: "India" }} />
+      <Footer/>
     </>
   );
 }

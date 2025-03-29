@@ -226,7 +226,7 @@ export default function SignIn({ providers }: SignInProps) {
           </div>
         </div>
       </div>
-      <Footer country={{ name: "India" }} />
+      <Footer />
     </>
   );
 }
