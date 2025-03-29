@@ -14,7 +14,6 @@ const userSchema = mongoose.Schema(
     },
     phoneNumber: {
       type: String,
-      required: [true, "Please provide your phone number"],
       unique: [true, "This phone number is already registered!!"],
       validate: [
         validator.isMobilePhone,
@@ -50,10 +49,14 @@ const userSchema = mongoose.Schema(
       enum: ["User", "Admin", "SuperAdmin"],
       default: "User",
     },
-    isVerified: {
+    isEmailVerified: {
       type: Boolean,
       default: false,
       required: true,
+    },
+    isPhoneNumberVerified: {
+      type: Boolean,
+      default: false,
     },
     age: {
       type: Number,

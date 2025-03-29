@@ -12,53 +12,75 @@ import {
   getSession,
   signIn,
 } from "next-auth/react";
+import axios from "axios";
 import DotLoaderSpinner from "../components/loaders/dotLoader";
 import Router from "next/router";
 
-const initialValues: LoginFormProps = {
+const initialValues: SignupFormProps = {
+  name: "",
   email: "",
+  username: "",
   password: "",
+  conf_password: "",
   success: "",
   error: "",
 };
 
-export default function SignIn({
-  providers,
-  callbackUrl,
-  csrfToken,
-}: SignInProps) {
+export default function SignIn({ providers }: SignInProps) {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<LoginFormProps>(initialValues);
+  const [user, setUser] = useState<SignupFormProps>(initialValues);
 
-  const { email, password, error } = user;
+  const { name, email, password, conf_password } = user;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
 
-  const loginValidation = Yup.object({
+  const registerValidation = Yup.object({
+    name: Yup.string()
+      .required("What's your name?")
+      .min(2, "First name must be between 2 and 16 characters.")
+      .max(16, "First name must be between 2 and 16 characters.")
+      .matches(/^[aA-zZ]/, "Numbers and special characters are not allowed."),
     email: Yup.string()
-      .required("Email address is required.")
-      .email("Please enter a valid email address."),
-    password: Yup.string().required("Please enter a password"),
+      .required(
+        "You'll need this when you log in and if you ever need to reset your password."
+      )
+      .email("Enter a valid email address."),
+    password: Yup.string()
+      .required(
+        "Enter a combination of at least six numbers, letters, and punctuation marks (such as ! and &)."
+      )
+      .min(6, "Password must be at least 6 characters.")
+      .max(36, "Password can't be more than 36 characters"),
+    conf_password: Yup.string()
+      .required("Confirm your password.")
+      .oneOf([Yup.ref("password")], "Passwords must match."),
   });
 
-  const signInHandler = async () => {
-    setLoading(true);
-    const options = {
-      redirect: false,
-      email: email,
-      password: password,
-    };
-    const res = await signIn("credentials", options);
-    setUser({ ...user, success: "", error: "" });
-    setLoading(false);
-    if (res?.error) {
+  const signUpHandler = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post("/api/auth/signup", {
+        name,
+        email,
+        password,
+      });
+      setUser({ ...user, error: "", success: data.message });
       setLoading(false);
-      setUser({ ...user, error: res?.error });
-    } else {
-      Router.push(callbackUrl || "/");
+      setTimeout(async () => {
+        const options = {
+          redirect: false,
+          email: email,
+          password: password,
+        };
+        await signIn("credentials", options);
+        Router.push("/");
+      }, 2000);
+    } catch (error: any) {
+      setLoading(false);
+      setUser({ ...user, success: "", error: error.response.data.message });
     }
   };
 
@@ -82,25 +104,36 @@ export default function SignIn({
             </span>
           </div>
           <div className="mt-4">
-            <h1 className="text-[50px] m-0">Sign in</h1>
+            <h1 className="text-[50px] m-0">Sign Up</h1>
             <p className="text-gray-500">
               Get access to one of the best Eshopping services in the world.
             </p>
             <Formik
               enableReinitialize
               initialValues={{
+                name,
                 email,
                 password,
+                conf_password,
               }}
-              validationSchema={loginValidation}
-              onSubmit={signInHandler}
+              validationSchema={registerValidation}
+              onSubmit={signUpHandler}
             >
               {() => (
-                <Form method="post" action="/api/auth/signin/email">
-                  <input
-                    type="hidden"
-                    name="csrfToken"
-                    defaultValue={csrfToken}
+                <Form>
+                  <LoginInput
+                    type="text"
+                    name="name"
+                    icon="user"
+                    placeholder="Full Name"
+                    onChange={handleChange}
+                  />
+                  <LoginInput
+                    type="text"
+                    name="name"
+                    icon="user"
+                    placeholder="User Name"
+                    onChange={handleChange}
                   />
                   <LoginInput
                     type="text"
@@ -116,13 +149,26 @@ export default function SignIn({
                     placeholder="Password"
                     onChange={handleChange}
                   />
-                  <CircledIconBtn type="submit" text="Sign in" />
-                  {error && (
-                    <span className="text-red-500 text-sm">{error}</span>
-                  )}
-                  <div className="text-gray-600 pt-4 text-sm hover:text-blue-500 hover:border-b hover:border-blue-500">
-                    <Link href="/auth/forgot">Forgot password?</Link>
+                  <LoginInput
+                    type="password"
+                    name="conf_password"
+                    icon="password"
+                    placeholder="Re-Type Password"
+                    onChange={handleChange}
+                  />
+                  <div className="my-6">
+                    <label htmlFor="profilePicture" className="block mb-2">
+                      Profile Picture
+                    </label>
+                    <input
+                      type="file"
+                      id="profilePicture"
+                      name="profilePicture"
+                      accept="image/*"
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
                   </div>
+                  <CircledIconBtn type="submit" text="Sign up" />
                 </Form>
               )}
             </Formik>
@@ -144,7 +190,7 @@ export default function SignIn({
                           alt=""
                           className="w-9"
                         />
-                        Sign in with {provider.name}
+                        Sign up with {provider.name}
                       </button>
                     </div>
                   );

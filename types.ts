@@ -27,13 +27,13 @@ interface Post {
 }
 
 interface Campaign {
-    title: string;
-    description: string;
-    location: string;
-    date: string;
-    organizer: string;
-    images?: string[];
-    upVotes?: string[];
+  title: string;
+  description: string;
+  location: string;
+  date: string;
+  organizer: string;
+  images?: string[];
+  upVotes?: string[];
 }
 
 interface LoginInputProps {
@@ -49,15 +49,19 @@ interface SignInProps {
   csrfToken: string;
 }
 
-interface UserState {
-  login_email: string;
-  login_password: string;
+interface SignupFormProps {
   name: string;
   email: string;
+  username: string;
   password: string;
   conf_password: string;
   success: string;
   error: string;
-  login_error: string;
 }
 
+interface LoginFormProps {
+  email: string;
+  password: string;
+  success: string;
+  error: string;
+}
