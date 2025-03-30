@@ -17,6 +17,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/sendEmails.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/sendEmails.ts"],
   "exclude": ["node_modules"]
 }
