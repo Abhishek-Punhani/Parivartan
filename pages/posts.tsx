@@ -1,16 +1,22 @@
-import Navbar from '@/components/Navbar';
-import { Button } from '@/components/buttons/button';
-import Footer from '@/components/footer/index';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/select";
-import { AlertTriangle, Clock, Search, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+import Navbar from "@/components/Navbar";
+import { Button } from "@/components/buttons/button";
+import Footer from "@/components/footer/index";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/select";
+import { AlertTriangle, Clock, Search, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Posts() {
   // const { toast } = useToast();
-  const [searchText, setSearchText] = useState('');
-  const [sortMethod, setSortMethod] = useState('trending');
-  const [pollutionTypeFilter, setPollutionTypeFilter] = useState('all');
+  const [searchText, setSearchText] = useState("");
+  const [sortMethod, setSortMethod] = useState("trending");
+  const [pollutionTypeFilter, setPollutionTypeFilter] = useState("all");
   const [posts, setPosts] = useState<Post[]>([]);
 
   return (
@@ -19,9 +25,12 @@ export default function Posts() {
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">Pollution Reports</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              Pollution Reports
+            </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Community-submitted pollution reports from across India. Join us in tracking and addressing environmental issues.
+              Community-submitted pollution reports from across India. Join us
+              in tracking and addressing environmental issues.
             </p>
           </div>
 
@@ -39,7 +48,10 @@ export default function Posts() {
               </div>
 
               <div className="flex gap-4">
-                <Select value={pollutionTypeFilter} onValueChange={setPollutionTypeFilter}>
+                <Select
+                  value={pollutionTypeFilter}
+                  onValueChange={setPollutionTypeFilter}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Pollution Type" />
                   </SelectTrigger>
@@ -92,12 +104,10 @@ export default function Posts() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
       </main>
       <Footer />
     </div>
-  )
+  );
 }

@@ -15,8 +15,9 @@ declare module "next-auth" {
       id: string;
       name?: string | null;
       email?: string | null;
-      image?: string | null;
+      picture?: string | null;
       role?: string;
+      isEmailVerified?: boolean;
     };
   }
 }
@@ -27,10 +28,28 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      async profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          picture: profile.avatar_url,
+          isEmailVerified: profile.email_verified,
+        };
+      },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      async profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          picture: profile.picture,
+          isEmailVerified: profile.email_verified,
+        };
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -65,7 +84,6 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           role: user.role,
           isEmailVerified: user.isEmailVerified,
-          age: user.age,
         };
       },
     }),
@@ -73,20 +91,38 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        const customUser = user as {
+          id: string;
+          name?: string | null;
+          email?: string | null;
+          picture?: string | null;
+          role?: string;
+          isEmailVerified?: boolean;
+        };
+        token.id = customUser.id;
+        token.name = customUser.name;
+        token.email = customUser.email;
+        token.picture = customUser.picture;
+        token.role = customUser.role;
+        token.isEmailVerified = customUser.isEmailVerified;
       }
       return token;
     },
     async session({ session, token }) {
       let user = await UserModel.findById(token.sub);
       if (session?.user) {
-        session.user = {
-          ...session.user,
-          id: token.sub || user._id.toString(),
-          role: user.role || "user",
-        };
+      session.user = {
+        ...session.user,
+        id: token.sub || user._id.toString(),
+        role: user.role || "user",
+        isEmailVerified: user.isEmailVerified || false,
+        name: user.name || session.user.name,
+        email: user.email || session.user.email,
+        picture: user.picture || session.user.picture,
+      };
       }
       token.role = user.role || "user";
+      token.isEmailVerified = user.isEmailVerified || false;
       return session;
     },
   },

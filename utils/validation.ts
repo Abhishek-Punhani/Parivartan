@@ -8,15 +8,8 @@ export const validateEmail = (email: string) => {
   return regextSt.test(email);
 };
 
-
 export const createUser = async (user: User) => {
-  if (
-    !user.name ||
-    !user.username ||
-    !user.email ||
-    !user.password ||
-    !user.age
-  ) {
+  if (!user.name || !user.username || !user.email || !user.password) {
     throw new Error("Please fill all fields");
   }
 
@@ -52,7 +45,6 @@ export const createUser = async (user: User) => {
       user.picture?.trim() !== ""
         ? user.picture
         : process.env.DEFAULT_PROFILE_PICTURE,
-    age: user.age,
     role: "User",
     isVerified: false,
   });
@@ -60,7 +52,7 @@ export const createUser = async (user: User) => {
   return newUser;
 };
 
-export const getUserByEmail = async (email: string)=> {
+export const getUserByEmail = async (email: string) => {
   const user = UserModel.findOne({ email });
   if (!user) {
     throw new Error("User not found");

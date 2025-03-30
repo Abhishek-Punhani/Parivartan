@@ -15,8 +15,9 @@ import {
 } from "next-auth/react";
 import axios from "axios";
 import DotLoaderSpinner from "../../components/loaders/dotLoader";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import Picture from "@/components/inputs/Picture";
+import Navbar from "@/components/Navbar";
 
 const initialValues: SignupFormProps = {
   name: "",
@@ -25,7 +26,6 @@ const initialValues: SignupFormProps = {
   password: "",
   conf_password: "",
   profilePicture: "",
-  age: null,
   success: "",
   error: "",
 };
@@ -35,8 +35,8 @@ export default function SignIn({ providers }: SignInProps) {
   const [user, setUser] = useState<SignupFormProps>(initialValues);
   const [picture, setPicture] = useState<File | null>(null);
   const [readablePicture, setReadablePicture] = useState("");
-
-  const { name, email, password, conf_password, username, age, error } = user;
+  const router = useRouter();
+  const { name, email, password, conf_password, username, error } = user;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -94,7 +94,6 @@ export default function SignIn({ providers }: SignInProps) {
         password,
         username,
         profilePicture: link,
-        age,
       });
       setUser({ ...user, error: "", success: data.message });
       setLoading(false);
@@ -108,12 +107,17 @@ export default function SignIn({ providers }: SignInProps) {
   return (
     <>
       {loading && <DotLoaderSpinner loading={loading} />}
-      {/* <Header country={country} /> */}
+      <Navbar />
       <div className="relative min-h-screen overflow-hidden flex justify-center">
         <div className="p-12 last:mt-12 md:last:mt-0">
           <div className="flex items-center justify-between max-w-[300px]">
             <div className="w-[50px] h-[50px] border border-gray-400 rounded-full grid place-items-center cursor-pointer hover:border-blue-500">
-              <BiLeftArrowAlt className="w-[20px] h-[20px] text-gray-800 hover:text-blue-500" />
+              <BiLeftArrowAlt
+                className="w-[20px] h-[20px] text-gray-800 hover:text-blue-500"
+                onClick={() => {
+                  router.push("/");
+                }}
+              />
             </div>
             <span className="font-semibold text-sm">
               We'd be happy to join us!{" "}
@@ -137,7 +141,6 @@ export default function SignIn({ providers }: SignInProps) {
                 username,
                 password,
                 conf_password,
-                age,
               }}
               validationSchema={registerValidation}
               onSubmit={signUpHandler}
@@ -161,13 +164,6 @@ export default function SignIn({ providers }: SignInProps) {
                     name="name"
                     icon="user"
                     placeholder="Full Name"
-                    onChange={handleChange}
-                  />
-                  <LoginInput
-                    type="number"
-                    name="age"
-                    icon="age"
-                    placeholder="Age"
                     onChange={handleChange}
                   />
                   <LoginInput
@@ -195,6 +191,9 @@ export default function SignIn({ providers }: SignInProps) {
                   {error && (
                     <div className="text-red-500 text-sm mt-2">{error}</div>
                   )}
+                  <div className="text-gray-600 pt-4 text-sm hover:text-blue-500 hover:border-b hover:border-blue-500">
+                    <Link href="/auth/signin"> Already a user ?</Link>
+                  </div>
                 </Form>
               )}
             </Formik>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -12,8 +13,16 @@ import {
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/toast/toastContext";
 
 const ProfilePage = () => {
+  const { data: session } = useSession();
+  console.log(session);
+  const router = useRouter();
+  const toast = useToast();
+  const [user, setUser] = useState<ClientUser | null>(null);
   const [userData, setUserData] = useState({
     name: "River Guardian",
     email: "user@example.com",
@@ -61,6 +70,23 @@ const ProfilePage = () => {
     ],
   });
 
+  useEffect(() => {
+    if (!session) {
+      toast.open({
+        message: {
+          heading: "Authentication Required",
+          content: "You need to sign in to view your profile.",
+        },
+        duration: 5000,
+        position: "top-center",
+        color: "error",
+      });
+      router.push("/auth/signin");
+    } else {
+      setUser(session?.user);
+    }
+  }, [session, router]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -70,11 +96,15 @@ const ProfilePage = () => {
             {/* Profile Sidebar */}
             <div className="w-full md:w-1/3 bg-white rounded-lg shadow-md p-6">
               <div className="flex flex-col items-center">
-                <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <User className="w-16 h-16 text-blue-500" />
+                <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+                  <img
+                  src={user?.picture || "/default-profile.png"}
+                  alt="Profile Picture"
+                  className="w-full h-full object-cover"
+                  />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800">
-                  {userData.name}
+                  {user?.name}
                 </h2>
                 <button className="mt-2 text-sm flex items-center text-blue-500 hover:text-blue-600 transition-colors">
                   <Edit className="w-4 h-4 mr-1" />
@@ -84,7 +114,7 @@ const ProfilePage = () => {
                 <div className="w-full mt-6 space-y-4">
                   <div className="flex items-center text-gray-600">
                     <Mail className="w-5 h-5 mr-3 text-blue-500" />
-                    <span>{userData.email}</span>
+                    <span>{user?.email}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <MapPin className="w-5 h-5 mr-3 text-blue-500" />

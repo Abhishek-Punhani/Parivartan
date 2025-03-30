@@ -2,64 +2,63 @@ import { Button } from "@/components/buttons/button";
 import Footer from "@/components/footer";
 import { Input } from "@/components/inputs/input";
 import Navbar from "@/components/Navbar";
-import { Award, MapPin, Plus, Search, TrendingUp, } from "lucide-react";
+import { Award, MapPin, Plus, Search, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 
-
 export default function Community() {
   const [searchText, setSearchText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-const topContributors = [
-  {
-    id: 1,
-    name: "Aarav Sharma",
-    location: "Mumbai",
-    points: 1280,
-    events: 15,
-    reports: 32,
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    id: 2,
-    name: "Priya Patel",
-    location: "Delhi",
-    points: 1150,
-    events: 12,
-    reports: 28,
-    avatar: "https://randomuser.me/api/portraits/women/28.jpg",
-  },
-  {
-    id: 3,
-    name: "Vikram Mehta",
-    location: "Bangalore",
-    points: 980,
-    events: 10,
-    reports: 22,
-    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-  },
-  {
-    id: 4,
-    name: "Deepika Reddy",
-    location: "Chennai",
-    points: 920,
-    events: 8,
-    reports: 30,
-    avatar: "https://randomuser.me/api/portraits/women/32.jpg",
-  },
-  {
-    id: 5,
-    name: "Raj Kumar",
-    location: "Kolkata",
-    points: 870,
-    events: 9,
-    reports: 20,
-    avatar: "https://randomuser.me/api/portraits/men/67.jpg",
-  },
-];
+  const topContributors = [
+    {
+      id: 1,
+      name: "Aarav Sharma",
+      location: "Mumbai",
+      points: 1280,
+      events: 15,
+      reports: 32,
+      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    },
+    {
+      id: 2,
+      name: "Priya Patel",
+      location: "Delhi",
+      points: 1150,
+      events: 12,
+      reports: 28,
+      avatar: "https://randomuser.me/api/portraits/women/28.jpg",
+    },
+    {
+      id: 3,
+      name: "Vikram Mehta",
+      location: "Bangalore",
+      points: 980,
+      events: 10,
+      reports: 22,
+      avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+    },
+    {
+      id: 4,
+      name: "Deepika Reddy",
+      location: "Chennai",
+      points: 920,
+      events: 8,
+      reports: 30,
+      avatar: "https://randomuser.me/api/portraits/women/32.jpg",
+    },
+    {
+      id: 5,
+      name: "Raj Kumar",
+      location: "Kolkata",
+      points: 870,
+      events: 9,
+      reports: 20,
+      avatar: "https://randomuser.me/api/portraits/men/67.jpg",
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -441,7 +440,197 @@ const topContributors = [
                 </div>
               </div>
             </TabsContent>
-         
+            <TabsContent value="impact" className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                  <div className="text-4xl font-bold text-green-500 mb-2">
+                    15,750 kg
+                  </div>
+                  <div className="text-gray-600">Waste Collected</div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                  <div className="text-4xl font-bold text-blue-500 mb-2">
+                    247
+                  </div>
+                  <div className="text-gray-600">Cleanup Events</div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                  <div className="text-4xl font-bold text-red-500 mb-2">
+                    5,280
+                  </div>
+                  <div className="text-gray-600">Participants</div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-800">
+                    Impact by Region
+                  </h3>
+                  <p className="text-gray-600">
+                    River cleanup progress across different regions of India.
+                  </p>
+                </div>
+
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {[
+                      {
+                        city: "Mumbai",
+                        rivers: "Mithi River, Ulhas River",
+                        weight: "4,350 kg",
+                        events: "62 events",
+                        progress: "85%",
+                      },
+                      {
+                        city: "Delhi",
+                        rivers: "Yamuna River",
+                        weight: "3,820 kg",
+                        events: "54 events",
+                        progress: "75%",
+                      },
+                      {
+                        city: "Varanasi",
+                        rivers: "Ganges River",
+                        weight: "2,980 kg",
+                        events: "45 events",
+                        progress: "60%",
+                      },
+                      {
+                        city: "Chennai",
+                        rivers: "Cooum River, Adyar River",
+                        weight: "2,450 kg",
+                        events: "38 events",
+                        progress: "50%",
+                      },
+                      {
+                        city: "Pune",
+                        rivers: "Mula-Mutha Rivers",
+                        weight: "2,150 kg",
+                        events: "32 events",
+                        progress: "40%",
+                      },
+                    ].map((region, index) => (
+                      <div key={index}>
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            <h4 className="font-semibold text-gray-800">
+                              {region.city}
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              {region.rivers}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-green-600">
+                              {region.weight}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {region.events}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                          <div
+                            className="bg-green-500 h-2.5 rounded-full"
+                            style={{ width: region.progress }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+                  <h4 className="text-lg font-bold text-gray-800 mb-3">
+                    Types of Waste Collected
+                  </h4>
+                  <div className="space-y-4">
+                    {[
+                      { type: "Plastic Waste", percentage: "68%" },
+                      { type: "Fabric & Clothing", percentage: "12%" },
+                      { type: "Glass & Metal", percentage: "8%" },
+                      { type: "Styrofoam", percentage: "6%" },
+                      { type: "Rubber", percentage: "4%" },
+                      { type: "Other", percentage: "2%" },
+                    ].map((waste, index) => (
+                      <div key={index}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm text-gray-600">
+                            {waste.type}
+                          </span>
+                          <span className="text-sm font-semibold text-gray-800">
+                            {waste.percentage}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-500 h-2 rounded-full"
+                            style={{ width: waste.percentage }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+                  <h4 className="text-lg font-bold text-gray-800 mb-3">
+                    Most Improved Rivers
+                  </h4>
+                  <div className="space-y-6">
+                    {[
+                      {
+                        river: "Sabarmati River",
+                        description:
+                          "Water quality improved by 32% in the past 6 months due to regular cleanup efforts.",
+                      },
+                      {
+                        river: "Mithi River",
+                        description:
+                          "Significant reduction in floating waste and improved dissolved oxygen levels.",
+                      },
+                      {
+                        river: "Adyar River",
+                        description:
+                          "Restored riverbanks with native vegetation helping filter pollutants.",
+                      },
+                    ].map((improvement, index) => (
+                      <div key={index} className="flex items-center space-x-4">
+                        <div className="bg-green-100 rounded-full p-3">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-green-600"
+                          >
+                            <path d="m18 15-6-6-6 6" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-800">
+                            {improvement.river}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {improvement.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </main>

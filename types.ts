@@ -6,7 +6,15 @@ interface User {
   password: string;
   role?: "User" | "Admin" | "SuperAdmin";
   isVerified: boolean;
-  age: number;
+}
+
+interface ClientUser {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  picture?: string | null;
+  role?: string;
+  isEmailVerified?: boolean;
 }
 
 interface Post {
@@ -52,7 +60,6 @@ interface SignupFormProps {
   name: string;
   email: string;
   username: string;
-  age: number | null;
   profilePicture: string;
   password: string;
   conf_password: string;

@@ -46,9 +46,6 @@ const userSchema = mongoose.Schema(
       default: false,
       required: true,
     },
-    age: {
-      type: Number,
-    },
   },
   {
     collection: "users",

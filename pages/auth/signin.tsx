@@ -13,8 +13,9 @@ import {
   signIn,
 } from "next-auth/react";
 import DotLoaderSpinner from "../../components/loaders/dotLoader";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import axios from "axios";
+import Navbar from "@/components/Navbar";
 
 const initialValues: LoginFormProps = {
   email: "",
@@ -30,7 +31,7 @@ export default function SignIn({
 }: SignInProps) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<LoginFormProps>(initialValues);
-
+  const router = useRouter();
   const { email, password, error } = user;
 
   useEffect(() => {
@@ -98,12 +99,15 @@ export default function SignIn({
   return (
     <>
       {loading && <DotLoaderSpinner loading={loading} />}
-      {/* <Header country={country} /> */}
+      <Navbar />
       <div className="relative min-h-screen overflow-hidden flex justify-center">
         <div className="p-12 last:mt-12 md:last:mt-0">
           <div className="flex items-center justify-between max-w-[300px]">
             <div className="w-[50px] h-[50px] border border-gray-400 rounded-full grid place-items-center cursor-pointer hover:border-blue-500">
-              <BiLeftArrowAlt className="w-[20px] h-[20px] text-gray-800 hover:text-blue-500" />
+              <BiLeftArrowAlt
+                className="w-[20px] h-[20px] text-gray-800 hover:text-blue-500"
+                onClick={() => router.push("/")}
+              />
             </div>
             <span className="font-semibold text-sm">
               We'd be happy to join us!{" "}
@@ -177,6 +181,9 @@ export default function SignIn({
                   <div className="text-gray-600 pt-4 text-sm hover:text-blue-500 hover:border-b hover:border-blue-500">
                     <Link href="/auth/forgot">Forgot password?</Link>
                   </div>
+                  <div className="text-gray-600 pt-4 text-sm hover:text-blue-500 hover:border-b hover:border-blue-500">
+                    <Link href="/auth/signup">Don't have an account?</Link>
+                  </div>
                 </Form>
               )}
             </Formik>
@@ -208,7 +215,7 @@ export default function SignIn({
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }
