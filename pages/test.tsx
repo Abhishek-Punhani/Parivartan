@@ -1,11 +1,14 @@
 import React from "react";
 import ReportCard from "@/components/ReportCard";
 import { useToast } from "@/contexts/toast/toastContext";
+import EventCard from "@/components/EventCard";
+import Navbar from "@/components/Navbar";
 
 export default function TestPage() {
   const toast = useToast();
   return (
     <div className="min-h-screen flex flex-col">
+      <Navbar />
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-8">
@@ -35,7 +38,6 @@ export default function TestPage() {
             </div>
           </div>
         </div>
-
         <div className="flex justify-center space-x-4 mt-8">
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
@@ -86,6 +88,27 @@ export default function TestPage() {
             Show Error Toast
           </button>
         </div>
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+            Test Event Card
+          </h2>
+          <div className="flex justify-center">
+            <EventCard
+              id={1}
+              title="River Cleanup Drive"
+              description="Join us in cleaning the riverbanks and restoring the natural beauty of our environment."
+              location="Yamuna River, Delhi"
+              date="2025-04-15"
+              time="9:00 AM - 1:00 PM"
+              organizer="Green Earth Initiative"
+              participants={45}
+              maxParticipants={50}
+              image="https://example.com/river-cleanup.jpg"
+              onJoin={() => alert("You have joined the event!")}
+            />
+          </div>
+        </div>
+        ;
       </main>
     </div>
   );
