@@ -37,9 +37,8 @@ export default function UserMenu({ user, isOpen, setIsOpen }: UserMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="absolute top-full right-0 w-72 bg-white shadow-md z-50 flex flex-col rounded-lg border border-gray-200 overflow-hidden"
+      className="absolute top-full right-0 w-90 bg-white shadow-md z-50 flex flex-col rounded-lg border border-gray-200 overflow-hidden"
     >
-      {/* Rest of your component remains the same */}
       <div className="p-4 border-b border-gray-100">
         <h4 className="text-center font-semibold text-gray-800">
           Welcome to Parivartan!

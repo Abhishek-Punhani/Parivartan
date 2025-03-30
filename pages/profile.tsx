@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  User,
   Mail,
   MapPin,
   Calendar,
@@ -14,15 +13,12 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/contexts/toast/toastContext";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
+  const user = session?.user;
   console.log(session);
-  const router = useRouter();
-  const toast = useToast();
-  const [user, setUser] = useState<ClientUser | null>(null);
+
   const [userData, setUserData] = useState({
     name: "River Guardian",
     email: "user@example.com",
@@ -70,23 +66,6 @@ const ProfilePage = () => {
     ],
   });
 
-  useEffect(() => {
-    if (!session) {
-      toast.open({
-        message: {
-          heading: "Authentication Required",
-          content: "You need to sign in to view your profile.",
-        },
-        duration: 5000,
-        position: "top-center",
-        color: "error",
-      });
-      router.push("/auth/signin");
-    } else {
-      setUser(session?.user);
-    }
-  }, [session, router]);
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -98,9 +77,9 @@ const ProfilePage = () => {
               <div className="flex flex-col items-center">
                 <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
                   <img
-                  src={user?.picture || "/default-profile.png"}
-                  alt="Profile Picture"
-                  className="w-full h-full object-cover"
+                    src={user?.picture || "/default-profile.png"}
+                    alt="Profile Picture"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800">

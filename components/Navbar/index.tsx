@@ -19,14 +19,7 @@ const Navbar = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [UserMenuOpen, setUserMenuOpen] = useState<Boolean>(false);
-  const [user, setUser] = useState<ClientUser | null>(null);
-
-  useEffect(() => {
-    if (session) {
-      setUser(session?.user);
-    }
-  }, [session]);
-
+  const user = session?.user;
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -36,9 +29,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="shadow-md sticky top-0 z-50 bg-white">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center">
+    <nav className="shadow-md sticky top-0 z-50 bg-white px-8">
+      <div className="w-full py-3">
+        <div className="flex justify-between items-center w-full">
           <Link href="/" className="flex items-center space-x-2">
             <Droplets className="h-8 w-8 text-blue-500" />
             <span className="text-xl font-bold text-gray-800">Parivartan</span>
@@ -86,23 +79,25 @@ const Navbar = () => {
             >
               Education
             </Link>
-            <Link href="/report">
-              <button className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600">
-                Report Pollution
-              </button>
-            </Link>
-            {user ? (
-              <button
-                onClick={() => setUserMenuOpen(!UserMenuOpen)}
-                className="flex items-center space-x-2 cursor-pointer"
-              >
-                <img
-                  src={user.picture || "/user.png"}
-                  alt="Profile"
-                  className="h-8 w-8 rounded-full"
-                />
-                <span className="text-gray-800">{user.name}</span>
-              </button>
+            {session && user ? (
+              <>
+                <Link href="/report">
+                  <button className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600">
+                    Report Pollution
+                  </button>
+                </Link>
+                <button
+                  onClick={() => setUserMenuOpen(!UserMenuOpen)}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <img
+                    src={user.picture || "/user.png"}
+                    alt="Profile"
+                    className="h-8 w-8 rounded-full"
+                  />
+                  <span className="text-gray-800">{user.name}</span>
+                </button>
+              </>
             ) : (
               <Link href="/auth/signin">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-lg font-small hover:bg-blue-600">
