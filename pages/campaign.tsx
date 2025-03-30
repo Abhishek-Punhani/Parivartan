@@ -88,7 +88,7 @@ export default function Campaigns() {
           </section>
         </div>
       </div>
-      <Footer country={{ name: "India" }} />
+      <Footer/>
     </>
   );
 }
