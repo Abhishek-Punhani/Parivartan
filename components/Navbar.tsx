@@ -23,9 +23,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2">
             <Droplets className="h-8 w-8 text-blue-500" />
-            <span className="text-xl font-bold text-gray-800">
-              RiverWatchers
-            </span>
+            <span className="text-xl font-bold text-gray-800">Parivartan</span>
           </Link>
 
           {/* Desktop Navigation */}

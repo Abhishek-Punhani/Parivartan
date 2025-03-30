@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Droplets className="h-8 w-8 text-river-500" />
-              <span className="text-xl font-bold">RiverWatchers</span>
+              <span className="text-xl font-bold">Parivartan</span>
             </div>
             <p className="text-gray-400">
               A community-driven platform for river pollution reporting and
@@ -147,8 +147,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
           <p>
-            &copy; {new Date().getFullYear()} RiverWatchers. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} Parivartan. All rights reserved.
           </p>
         </div>
       </div>
