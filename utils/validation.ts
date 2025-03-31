@@ -99,9 +99,9 @@ export const createPost = async (post: Post, id: string) => {
 };
 
 export const createCampaign = async (campaign: Campaign, id: string) => {
-  const { title, description, location, date } = campaign;
+  const { title, description, location, date , time , eventType,image} = campaign;
 
-  if (!title || !description || !date || !location) {
+  if (!title || !description  || !location || !date || !time || !eventType) {
     throw new Error("Please fill all the fields");
   }
 
@@ -110,8 +110,10 @@ export const createCampaign = async (campaign: Campaign, id: string) => {
     description,
     location,
     date,
+    time,
+    eventType,
     organizer: id,
-    images: [],
+    image,
     upVotes: [],
   });
 

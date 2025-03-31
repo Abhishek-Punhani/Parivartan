@@ -47,7 +47,7 @@ interface Campaign {
     | "Tree Plantation"
     | "Other";
   organiser: string;
-  images?: string[];
+  image: string;
   upVotes?: string[];
   reportErrors?:
     | "Spam"

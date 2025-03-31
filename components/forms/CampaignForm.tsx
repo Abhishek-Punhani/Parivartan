@@ -1,29 +1,35 @@
 import React, { useState } from "react";
-import { CalendarIcon, Clock, MapPin } from "lucide-react";
-import { format } from "date-fns";
+import { Clock, MapPin } from "lucide-react";
+import { Camera } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useToast } from "@/contexts/toast/toastContext";
+import axios from "axios";
+
+import { uploadFiles } from "@/utils/upload";
 
 interface CampaignFormProps {
   onSubmit: (
-    data: Omit<Campaign, "id" | "participants" | "status" | "organizer">
+    data: any
   ) => void;
   isLoading: boolean;
 }
 
 const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     title: "",
     description: "",
     location: "",
-    riverName: "",
-    date: new Date(),
-    time: "",
-    type: "Cleanup" as "Cleanup" | "Awareness" | "Monitoring" | "Planting",
-    maxParticipants: 20,
-    image:
-      "https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=800&q=80",
-  });
+    type: "River Cleanup",
+    time: ""
 
+  });
+  const [date, setDate] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [file, setFile]= useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const toast = useToast();
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -31,9 +37,8 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: Record<string, any>) => ({ ...prev, [name]: value }));
 
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -43,64 +48,99 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
     }
   };
 
-  const handleDateChange = (date: Date) => {
-    setFormData((prev) => ({ ...prev, date }));
 
-    // Clear error when date is selected
-    if (errors.date) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.date;
-        return newErrors;
-      });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
-    if (!formData.title || formData.title.length < 5) {
-      newErrors.title = "Title must be at least 5 characters";
-    }
-    if (!formData.description || formData.description.length < 20) {
-      newErrors.description = "Description must be at least 20 characters";
-    }
-    if (!formData.location || formData.location.length < 3) {
-      newErrors.location = "Location is required";
-    }
-    if (!formData.riverName || formData.riverName.length < 3) {
-      newErrors.riverName = "River name is required";
-    }
-    if (!formData.time || formData.time.length < 3) {
-      newErrors.time = "Time is required";
-    }
-    if (!formData.maxParticipants || formData.maxParticipants < 5) {
-      newErrors.maxParticipants = "Minimum 5 participants required";
-    }
+  //   console.log(formData);
+  // };
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (validate()) {
-      onSubmit({
-        title: formData.title,
-        description: formData.description,
-        location: formData.location,
-        riverName: formData.riverName,
-        date: format(formData.date, "yyyy-MM-dd"),
-        time: formData.time,
-        type: formData.type,
-        maxParticipants: Number(formData.maxParticipants),
-        image: formData.image,
+    setLoading(true);
+    const {title,description,location, time, type} = formData;
+console.log(formData,date);
+    if (
+      !title ||
+    !description ||
+    !location ||
+    !date ||
+    !time ||
+    !type
+    ) {
+      toast.open({
+        message: {
+          heading: "Missing Information",
+          content: "Please fill in all required fields before submitting.",
+        },
+        duration: 5000,
+        position: "top-center",
+        color: "warning",
       });
+      setLoading(false);
+      return;
+    }
+    const uploaded_file = await uploadFiles([{ file: file, type: "image" }]);
+    const link = uploaded_file[0].file.secure_url;
+    const newPost = {
+      title,
+      description,
+      location,
+      date,
+      time,
+      eventType:type,
+      image: link,
+    };
+
+    try {
+      const res = await axios.post("/api/campaign/create", newPost, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      console.log(res);
+
+      toast.open({
+        message: {
+          heading: "Report Submitted",
+          content: "Your report has been successfully submitted.",
+        },
+        duration: 5000,
+        position: "top-center",
+        color: "success",
+      });
+
+      setSuccess(true);
+    } catch (error) {
+      toast.open({
+        message: {
+          heading: "Submission Error",
+          content:
+            "There was an error submitting your report. Please try again.",
+        },
+        duration: 5000,
+        position: "top-center",
+        color: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const [showCalendar, setShowCalendar] = useState(false);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -172,27 +212,6 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
                 <p className="text-red-500 text-sm mt-1">{errors.location}</p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="riverName"
-                className="block text-sm font-medium text-gray-700"
-              >
-                River Name
-              </label>
-              <input
-                id="riverName"
-                name="riverName"
-                type="text"
-                placeholder="e.g., Mithi River"
-                value={formData.riverName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              {errors.riverName && (
-                <p className="text-red-500 text-sm mt-1">{errors.riverName}</p>
-              )}
-            </div>
           </div>
         </div>
 
@@ -205,48 +224,16 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
               >
                 Date
               </label>
-              <div className="relative">
-                <button
-                  type="button"
-                  className="w-full flex justify-between items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  onClick={() => setShowCalendar(!showCalendar)}
-                >
-                  <span
-                    className={
-                      formData.date ? "text-gray-900" : "text-gray-400"
-                    }
-                  >
-                    {formData.date
-                      ? format(formData.date, "PPP")
-                      : "Pick a date"}
-                  </span>
-                  <CalendarIcon className="h-4 w-4 text-gray-400" />
-                </button>
-                {showCalendar && (
-                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-300 p-2">
-                    {/* Simple date picker UI - in a real app you would use a calendar component */}
-                    <div className="grid grid-cols-7 gap-1">
-                      {Array.from({ length: 31 }, (_, i) => {
-                        const day = new Date();
-                        day.setDate(i + 1);
-                        return (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => {
-                              handleDateChange(day);
-                              setShowCalendar(false);
-                            }}
-                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-100"
-                          >
-                            {i + 1}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+
+              <div className=" w-full flex items-center justify-center">
+                <DatePicker
+                  selected={date}
+                  onChange={(value) => setDate(value)}
+                  className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholderText="Choose a date"
+                />
               </div>
+
               {errors.date && (
                 <p className="text-red-500 text-sm mt-1">{errors.date}</p>
               )}
@@ -259,7 +246,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
               >
                 Time
               </label>
-              <div className="relative">
+                <div className="relative">
                 <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <input
                   id="time"
@@ -268,9 +255,9 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
                   placeholder="e.g., 9:00 AM - 12:00 PM"
                   value={formData.time}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-sm"
                 />
-              </div>
+                </div>
               {errors.time && (
                 <p className="text-red-500 text-sm mt-1">{errors.time}</p>
               )}
@@ -292,58 +279,54 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="Cleanup">River Cleanup</option>
-                <option value="Awareness">Awareness Campaign</option>
-                <option value="Monitoring">Water Quality Monitoring</option>
-                <option value="Planting">Riverbank Planting</option>
+                <option value="River Cleanup">River Cleanup</option>
+                <option value="Awareness Campaign">Awareness Campaign</option>
+                <option value="Water Quality Monitoring">Water Quality Monitoring</option>
+                <option value="Tree Plantation">Tree Plantation</option>
+                <option value="Other">Other</option>
+
               </select>
               {errors.type && (
                 <p className="text-red-500 text-sm mt-1">{errors.type}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <label
-                htmlFor="maxParticipants"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Max Participants
-              </label>
-              <input
-                id="maxParticipants"
-                name="maxParticipants"
-                type="number"
-                min="5"
-                value={formData.maxParticipants}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              {errors.maxParticipants && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.maxParticipants}
-                </p>
-              )}
-            </div>
+
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="image"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Image URL (Optional)
+            <label htmlFor="image-upload" className="block text-sm font-medium text-gray-700">
+              Image Upload (Optional)
             </label>
-            <input
-              id="image"
-              name="image"
-              type="text"
-              placeholder="Enter image URL"
-              value={formData.image}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {errors.image && (
-              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+            {imagePreview ? (
+              <div className="relative rounded-md border border-gray-300 shadow-sm overflow-hidden">
+                <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-md" />
+                <button
+                  type="button"
+                  className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm"
+                  onClick={() => setImagePreview(null)}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex flex-col items-center justify-center text-center cursor-pointer">
+                <Camera className="h-12 w-12 text-gray-400" />
+                <div className="mt-2">
+                  <label htmlFor="image-upload" className="cursor-pointer text-blue-600 font-medium">
+                    Upload an image
+                  </label>
+                  <span className="text-gray-500"> or drag and drop</span>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+              </div>
             )}
           </div>
         </div>

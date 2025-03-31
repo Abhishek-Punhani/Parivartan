@@ -22,7 +22,7 @@ const campaignSchema = mongoose.Schema(
       type: String,
       required: [true, "Please provide Time"],
     },
-    EventType: {
+    eventType: {
       type: String,
       enum: [
         "River Cleanup",
@@ -37,11 +37,10 @@ const campaignSchema = mongoose.Schema(
       type: ObjectId,
       ref: "User",
     },
-    images: [
-      {
-        type: String,
-      },
-    ],
+    image:{
+      type:String,
+      required: [true, "Please provide Image"],
+    },
     upVotes: [
       {
         type: ObjectId,

@@ -3,22 +3,25 @@ import { createRouter } from "next-connect";
 import cors from "cors";
 import { createCampaign } from "@/utils/validation";
 import db from "../../../utils/db";
+import auth from "@/middleware/auth";
 
 interface AuthenticatedRequest extends NextApiRequest {
     user: {
-        _id: string;
+        id: string,
+        _id:string;
     };
 }
 
 const router = createRouter<AuthenticatedRequest, NextApiResponse>();
 
 router.use(cors());
-// router.use(auth);
+router.use(auth);
 
 router.post(async (req, res) => {
     try {
         await db.connectDb();
-        await createCampaign(req.body, '67e64564cdb446899d9eeb68');
+        console.log("db connected");
+        await createCampaign(req.body, req.user.id);
 
         db.disconnectDb();
 
