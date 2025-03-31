@@ -61,9 +61,16 @@ export const getUserByEmail = async (email: string) => {
 };
 
 export const createPost = async (post: Post, id: string) => {
-  const { title, content, severity, location, pollutionType } = post;
+  const { title, content, severity, location, pollutionType, image } = post;
 
-  if (!title || !content || !severity || !location || !pollutionType) {
+  if (
+    !title ||
+    !content ||
+    !severity ||
+    !location ||
+    !pollutionType ||
+    !image
+  ) {
     throw new Error("Please fill all the fields");
   }
 
@@ -85,6 +92,7 @@ export const createPost = async (post: Post, id: string) => {
     author: id,
     comments: [],
     upVotes: [],
+    image,
   });
 
   await newPost.save();

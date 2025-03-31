@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useToast } from "@/contexts/toast/toastContext";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { uploadFiles } from "@/utils/upload";
 
 const ReportForm: React.FC = () => {
   const router = useRouter();
@@ -13,15 +14,17 @@ const ReportForm: React.FC = () => {
   const [severity, setSeverity] = useState("");
   const [pollutionType, setPollutionType] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const toast = useToast();
   const { data: session } = useSession();
   const user = session?.user;
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -82,12 +85,19 @@ const ReportForm: React.FC = () => {
       );
     }
   };
-
+  console.log(file);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    if (!title || !content || !location || !severity || !pollutionType) {
+    if (
+      !title ||
+      !content ||
+      !location ||
+      !severity ||
+      !pollutionType ||
+      !file
+    ) {
       toast.open({
         message: {
           heading: "Missing Information",
@@ -100,7 +110,8 @@ const ReportForm: React.FC = () => {
       setLoading(false);
       return;
     }
-
+    const uploaded_file = await uploadFiles([{ file: file, type: "image" }]);
+    const link = uploaded_file[0].file.secure_url;
     const newPost = {
       title,
       content,
@@ -108,7 +119,7 @@ const ReportForm: React.FC = () => {
       severity: parseInt(severity),
       pollutionType: pollutionType as "Water" | "Air" | "Soil",
       author: user?.id,
-      image: imagePreview || undefined,
+      image: link,
     };
 
     try {
@@ -160,7 +171,7 @@ const ReportForm: React.FC = () => {
             received.
           </p>
           <button
-            onClick={() => router.push("/posts/new")}
+            onClick={() => router.push("/report")}
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
           >
             Add New Post

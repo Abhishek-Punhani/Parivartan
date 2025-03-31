@@ -1,6 +1,8 @@
 import Navbar from "@/components/Navbar";
+import ReportCard from "@/components/ReportCard";
 import { Button } from "@/components/buttons/button";
 import Footer from "@/components/footer/index";
+import { dateHandler } from "@/utils/date";
 import {
   Select,
   SelectContent,
@@ -8,9 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
+import axios from "axios";
 import { AlertTriangle, Clock, Search, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Posts() {
   // const { toast } = useToast();
@@ -19,6 +22,23 @@ export default function Posts() {
   const [pollutionTypeFilter, setPollutionTypeFilter] = useState("all");
   const [posts, setPosts] = useState<Post[]>([]);
 
+  useEffect(() => {
+    async function fetchPosts() {
+      await axios
+        .get("/api/post/retrieve")
+        .then((res) => {
+          setPosts(res.data);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+    fetchPosts();
+  }, []);
+  const handleUpvote = async (id: string) => {
+    console.log("Upvoted post with ID:", id);
+  };
+  console.log(posts);
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -104,7 +124,50 @@ export default function Posts() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <div
+                  key={post.id}
+                  onClick={() => handleUpvote(post.id)}
+                  className="cursor-pointer"
+                >
+                  <ReportCard
+                    id={Number(post.id)}
+                    title={post.title}
+                    description={post.content}
+                    location={post.location}
+                    severity={
+                      post.severity <= 33
+                        ? "Low"
+                        : post.severity <= 66
+                        ? "Medium"
+                        : "High"
+                    }
+                    date={`${dateHandler(post.createdAt)} ago`}
+                    image={post.image}
+                    likes={post.upVotes ? post.upVotes.length : 0}
+                    comments={post.comments ? post.comments.length : 0}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center">
+                <p className="text-gray-500 mb-4">
+                  No pollution reports match your search criteria.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchText("");
+                    setPollutionTypeFilter("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </main>
       <Footer />

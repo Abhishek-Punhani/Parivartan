@@ -1,4 +1,5 @@
 import { type } from "os";
+import { date } from "yup";
 
 const mongoose = require("mongoose");
 
@@ -39,6 +40,10 @@ const postSchema = mongoose.Schema(
       type: String,
       enum: ["Air", "Water", "Soil"],
       required: true,
+    },
+    image: {
+      type: String,
+      required: [true, "please provide an image"],
     },
     upVotes: [
       {

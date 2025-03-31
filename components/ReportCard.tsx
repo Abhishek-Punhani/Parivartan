@@ -1,16 +1,15 @@
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/buttons/button";
-import { ThumbsUp, MessageSquare, Flag, Clock, MapPin } from 'lucide-react';
+import { ThumbsUp, MessageSquare, Flag, Clock, MapPin } from "lucide-react";
 
 interface ReportCardProps {
   id: number;
   title: string;
   description: string;
   location: string;
-  riverName: string;
-  severity: 'low' | 'medium' | 'high';
+  severity: "Low" | "Medium" | "High";
   date: string;
   image?: string;
   likes?: number;
@@ -22,20 +21,19 @@ const ReportCard: React.FC<ReportCardProps> = ({
   title,
   description,
   location,
-  riverName,
   severity,
   date,
   image,
   likes = 0,
-  comments = 0
+  comments = 0,
 }) => {
   const getSeverityBadge = () => {
     switch (severity) {
-      case 'low':
+      case "Low":
         return <Badge className="bg-green-100 text-green-700">Low</Badge>;
-      case 'medium':
+      case "Medium":
         return <Badge className="bg-yellow-100 text-yellow-700">Medium</Badge>;
-      case 'high':
+      case "High":
         return <Badge className="bg-red-100 text-red-700">High</Badge>;
       default:
         return null;
@@ -58,16 +56,20 @@ const ReportCard: React.FC<ReportCardProps> = ({
         <div className="p-5">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 leading-tight">{title}</h2>
+              <h2 className="text-lg font-semibold text-gray-800 leading-tight">
+                {title}
+              </h2>
               <p className="flex items-center gap-1 mt-1 text-sm text-gray-600">
                 <MapPin className="h-4 w-4 text-blue-500" />
-                <span>{riverName}, {location}</span>
+                <span> {location}</span>
               </p>
             </div>
             {getSeverityBadge()}
           </div>
 
-          <p className="mt-3 text-sm text-gray-700 line-clamp-3">{description}</p>
+          <p className="mt-3 text-sm text-gray-700 line-clamp-3">
+            {description}
+          </p>
 
           <div className="flex justify-between items-center mt-5 text-xs text-gray-500">
             <div className="flex items-center">

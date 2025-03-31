@@ -18,9 +18,10 @@ interface ClientUser {
 }
 
 interface Post {
-  _id: string;
+  id: string;
   title: string;
   content: string;
+  image: string;
   severity: number;
   author?: string;
   comments?: string[];
@@ -39,11 +40,22 @@ interface Campaign {
   location: string;
   date: string;
   time: string;
-  eventType: "River Cleanup" | "Awareness Campaign" | "Water Quality Monitoring" | "Tree Plantation" | "Other";
+  eventType:
+    | "River Cleanup"
+    | "Awareness Campaign"
+    | "Water Quality Monitoring"
+    | "Tree Plantation"
+    | "Other";
   organiser: string;
   images?: string[];
   upVotes?: string[];
-  reportErrors?: "Spam" | "Inappropriate" | "Hate Speech" | "Violence" | "False Information" | "Other";
+  reportErrors?:
+    | "Spam"
+    | "Inappropriate"
+    | "Hate Speech"
+    | "Violence"
+    | "False Information"
+    | "Other";
   customErrorReport?: string;
 }
 
@@ -77,4 +89,3 @@ interface LoginFormProps {
   success: string;
   error: string;
 }
-

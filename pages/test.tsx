@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import ReportCard from "@/components/ReportCard";
 import { useToast } from "@/contexts/toast/toastContext";
 import EventCard from "@/components/EventCard";
 import Navbar from "@/components/Navbar";
+import DatePicker from "react-datepicker";
 
+import "react-datepicker/dist/react-datepicker.css";
 export default function TestPage() {
   const toast = useToast();
+  const [value, setValue] = useState<Date | null>(null);
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -28,8 +31,7 @@ export default function TestPage() {
                 title="Pollution in River Ganga"
                 description="Severe pollution observed in the river, affecting the local ecosystem and community health."
                 location="Varanasi"
-                riverName="Ganga"
-                severity="high"
+                severity="High"
                 date="2025-03-30"
                 image="https://cdn.dnaindia.com/sites/default/files/2021/07/23/986750-ganga-pollution.jpg?im=FitAndFill=(1200,900)"
                 likes={100}
@@ -108,7 +110,27 @@ export default function TestPage() {
             />
           </div>
         </div>
-        ;
+        <div className="mt-12 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+            Select a Date
+          </h2>
+          <div className="flex items-center justify-center">
+            <DatePicker
+              selected={value}
+              onChange={(date) => setValue(date)}
+              className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholderText="Choose a date"
+            />
+          </div>
+          {value && (
+            <p className="mt-4 text-center text-gray-600">
+              Selected Date:{" "}
+              <span className="font-semibold text-gray-800">
+                {value.toLocaleDateString()}
+              </span>
+            </p>
+          )}
+        </div>
       </main>
     </div>
   );

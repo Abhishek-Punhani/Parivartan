@@ -3,10 +3,11 @@ import { createRouter } from "next-connect";
 import cors from "cors";
 import db from "../../../utils/db"; // Database connection
 import PostModel from "@/models/Post";
+import auth from "@/middleware/auth";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(cors());
+router.use(cors()).use(auth);
 
 router.get(async (req, res) => {
   try {
