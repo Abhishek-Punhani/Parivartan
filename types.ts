@@ -38,9 +38,13 @@ interface Campaign {
   description: string;
   location: string;
   date: string;
-  organizer: string;
+  time: string;
+  eventType: "River Cleanup" | "Awareness Campaign" | "Water Quality Monitoring" | "Tree Plantation" | "Other";
+  organiser: string;
   images?: string[];
   upVotes?: string[];
+  reportErrors?: "Spam" | "Inappropriate" | "Hate Speech" | "Violence" | "False Information" | "Other";
+  customErrorReport?: string;
 }
 
 interface LoginInputProps {

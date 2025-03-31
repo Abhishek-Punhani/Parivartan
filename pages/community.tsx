@@ -7,6 +7,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
+import CreateCampaignDialog from "@/components/modals/CreateCampaignDialog";
 
 export default function Community() {
   const [searchText, setSearchText] = useState("");
@@ -60,6 +61,10 @@ export default function Community() {
     },
   ];
 
+  const loadCampaigns = () => {
+    console.log("Loading campaigns...");
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -85,10 +90,12 @@ export default function Community() {
                 className="pl-10"
               />
             </div>
-            <Button className="bg-green-500 hover:bg-green-600 flex items-center">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Cleanup Event
-            </Button>
+            <CreateCampaignDialog onCampaignCreated={loadCampaigns}>
+              <Button className="bg-green-500 hover:bg-green-600">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Cleanup Event
+              </Button>
+            </CreateCampaignDialog>
           </div>
 
           <Tabs defaultValue="events" className="w-full">
@@ -236,9 +243,11 @@ export default function Community() {
                       Ready to make a difference?
                     </h4>
 
-                    <button className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mb-4">
-                      Start Planning Your Event
-                    </button>
+                    <CreateCampaignDialog onCampaignCreated={loadCampaigns}>
+                      <Button className="w-full bg-green-500 hover:bg-green-600 mb-4">
+                        Start Planning Your Event
+                      </Button>
+                    </CreateCampaignDialog>
 
                     <p className="text-sm text-gray-600">
                       By creating an event, you're taking a crucial step in

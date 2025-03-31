@@ -18,6 +18,21 @@ const campaignSchema = mongoose.Schema(
       type: Date,
       required: [true, "Please provide Date"],
     },
+    time: {
+      type: String,
+      required: [true, "Please provide Time"],
+    },
+    EventType: {
+      type: String,
+      enum: [
+        "River Cleanup",
+        "Awareness Campaign",
+        "Water Quality Monitoring",
+        "Tree Plantation",
+        "Other",
+      ],
+      required: [true, "Please provide Event Type"],
+    },
     organiser: {
       type: ObjectId,
       ref: "User",

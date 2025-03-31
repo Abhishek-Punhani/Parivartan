@@ -14,8 +14,8 @@ const Footer = () => {
               <span className="text-xl font-bold">Parivartan</span>
             </div>
             <p className="text-gray-400">
-              A community-driven platform for river pollution reporting and
-              cleanup initiatives across India.
+              A community-driven platform for pollution reporting and cleanup
+              initiatives across India.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white">
