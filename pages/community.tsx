@@ -3,15 +3,36 @@ import Footer from "@/components/footer";
 import { Input } from "@/components/inputs/input";
 import Navbar from "@/components/Navbar";
 import { Award, MapPin, Plus, Search, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import CreateCampaignDialog from "@/components/modals/CreateCampaignDialog";
+import axios from "axios";
 
 export default function Community() {
   const [searchText, setSearchText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const [upcomingCampaigns, setUpcomingCampaigns] = useState<Campaign[]>([]);
+  const [pastCampaigns, setPastCampaigns] = useState<Campaign[]>([]);
+
+  useEffect(() => {
+    async function fetchCampaigns() {
+      try {
+        const res = await axios.get("/api/campaign/retrieve");
+        setUpcomingCampaigns(res.data.upcomingCampaigns);
+        setPastCampaigns(res.data.pastCampaigns);
+      } catch (err) {
+        console.error("Error fetching campaigns:", err);
+      }
+    }
+    fetchCampaigns();
+  }, []);
+
+  console.log(upcomingCampaigns);
+  console.log(upcomingCampaigns);
+
 
   const topContributors = [
     {
@@ -61,6 +82,7 @@ export default function Community() {
     },
   ];
 
+
   const loadCampaigns = () => {
     console.log("Loading campaigns...");
   };
@@ -105,25 +127,129 @@ export default function Community() {
               <TabsTrigger value="impact">Community Impact</TabsTrigger>
             </TabsList>
             <TabsContent value="events" className="space-y-8">
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="overflow-hidden shadow-sm opacity-70 border border-gray-200 rounded-lg"
-                    >
-                      <div className="w-full h-48 bg-gray-200 animate-pulse"></div>
-                      <div className="p-4 border-b border-gray-200">
-                        <div className="h-5 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse mt-2"></div>
-                      </div>
-                      <div className="p-4">
-                        <div className="h-4 bg-gray-200 rounded w-full animate-pulse mb-2"></div>
-                        <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-                      </div>
+              {(upcomingCampaigns.length + pastCampaigns.length) > 0 ? (
+                upcomingCampaigns.length > 0 ? (
+                  <div>
+                    <div>upcoming campaigns</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {upcomingCampaigns.map((i) => (
+                        <div
+                          key={i.id}
+                          className="overflow-hidden shadow-sm border border-gray-200 rounded-lg bg-white"
+                        >
+                          {/* Campaign Image */}
+                          <img
+                            src={i.image}
+                            alt={i.title}
+                            className="w-full h-48 object-cover"
+                          />
+
+                          {/* Campaign Details */}
+                          <div className="p-4 border-b border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-800">{i.title}</h3>
+                            <p className="text-sm text-gray-600 mt-1">{i.eventType}</p>
+                          </div>
+
+                          <div className="p-4">
+                            <p className="text-sm text-gray-700">{i.description}</p>
+                            <p className="text-sm text-gray-600 mt-2">
+                              <span className="font-semibold">Location:</span> {i.location}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              <span className="font-semibold">Date:</span> {new Date(i.date).toLocaleDateString()}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              <span className="font-semibold">Time:</span> {i.time}
+                            </p>
+                          </div>
+
+                          {/* Upvotes */}
+                          <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+                            <button className="text-blue-600 font-semibold flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="2"
+                                stroke="currentColor"
+                                className="w-5 h-5 mr-1"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M14 9l-4 4m0 0l4 4m-4-4h12m-6-8H6a2 2 0 00-2 2v12a2 2 0 002 2h6"
+                                />
+                              </svg>
+                              {i.upVotes?.length ?? 0} Upvotes
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+
+                ) : (
+                  <div>
+                    <div>past campaigns</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {pastCampaigns.map((i) => (
+
+                        <div
+                          key={i.id}
+                          className="overflow-hidden shadow-sm border border-gray-200 rounded-lg bg-white"
+                        >
+                          {/* Campaign Image */}
+                          <img
+                            src={i.image}
+                            alt={i.title}
+                            className="w-full h-48 object-cover"
+                          />
+
+                          {/* Campaign Details */}
+                          <div className="p-4 border-b border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-800">{i.title}</h3>
+                            <p className="text-sm text-gray-600 mt-1">{i.eventType}</p>
+                          </div>
+
+                          <div className="p-4">
+                            <p className="text-sm text-gray-700">{i.description}</p>
+                            <p className="text-sm text-gray-600 mt-2">
+                              <span className="font-semibold">Location:</span> {i.location}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              <span className="font-semibold">Date:</span> {new Date(i.date).toLocaleDateString()}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              <span className="font-semibold">Time:</span> {i.time}
+                            </p>
+                          </div>
+
+                          {/* Upvotes */}
+                          <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+                            <button className="text-blue-600 font-semibold flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="2"
+                                stroke="currentColor"
+                                className="w-5 h-5 mr-1"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M14 9l-4 4m0 0l4 4m-4-4h12m-6-8H6a2 2 0 00-2 2v12a2 2 0 002 2h6"
+                                />
+                              </svg>
+                              {i.upVotes?.length ?? 0} Upvotes
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                )
               ) : (
                 <div className="col-span-full text-center py-12">
                   <p className="text-gray-500 mb-4">
@@ -290,13 +416,12 @@ export default function Community() {
                             />
                             {index < 3 && (
                               <div
-                                className={`absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${
-                                  index === 0
+                                className={`absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${index === 0
                                     ? "bg-yellow-500"
                                     : index === 1
-                                    ? "bg-gray-400"
-                                    : "bg-amber-600"
-                                }`}
+                                      ? "bg-gray-400"
+                                      : "bg-amber-600"
+                                  }`}
                               >
                                 {index === 0 ? "1" : index === 1 ? "2" : "3"}
                               </div>
