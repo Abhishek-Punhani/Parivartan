@@ -45,20 +45,14 @@ export default function Campaigns() {
             {upcomingCampaigns.length === 0 ? (
               <p>No upcoming campaigns at the moment. Check back later!</p>
             ) : (
-              upcomingCampaigns.map((campaign, index) => (
+              upcomingCampaigns.map((campaign: Campaign, index) => (
                 <div key={index} className="mb-8 p-6 bg-gray-50 rounded-lg shadow-sm">
                   <h3 className="text-2xl font-bold">{campaign.title}</h3>
                   <p className="text-gray-700">{campaign.description}</p>
                   <p className="text-gray-600">Location: {campaign.location}</p>
                   <p className="text-gray-600">Date: {new Date(campaign.date).toLocaleDateString()}</p>
-                  <p className="text-gray-600">Organizer: {campaign.organizer}</p>
-                  {campaign.images && campaign.images.length > 0 && (
-                    <div className="flex mt-4 space-x-4">
-                      {campaign.images.map((image, idx) => (
-                        <img key={idx} src={image} alt={`Campaign image ${idx + 1}`} className="w-32 h-32 object-cover rounded-lg" />
-                      ))}
-                    </div>
-                  )}
+                  <p className="text-gray-600">Organizer: {campaign.organiser}</p>
+                  {campaign.image && (<img src={campaign.image} alt="Campaign image" className="w-64 h-64 object-cover rounded-lg mt-4" />)}
                 </div>
               ))
             )}
@@ -74,21 +68,15 @@ export default function Campaigns() {
                   <p className="text-gray-700">{campaign.description}</p>
                   <p className="text-gray-600">Location: {campaign.location}</p>
                   <p className="text-gray-600">Date: {new Date(campaign.date).toLocaleDateString()}</p>
-                  <p className="text-gray-600">Organizer: {campaign.organizer}</p>
-                  {campaign.images && campaign.images.length > 0 && (
-                    <div className="flex mt-4 space-x-4">
-                      {campaign.images.map((image, idx) => (
-                        <img key={idx} src={image} alt={`Campaign image ${idx + 1}`} className="w-32 h-32 object-cover rounded-lg" />
-                      ))}
-                    </div>
-                  )}
+                  <p className="text-gray-600">Organizer: {campaign.organiser}</p>
+                  {campaign.image && (<img src={campaign.image} alt="Campaign image" className="w-64 h-64 object-cover rounded-lg mt-4" />)}
                 </div>
               ))
             )}
           </section>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }
