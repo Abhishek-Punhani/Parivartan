@@ -7,7 +7,7 @@ import auth from "@/middleware/auth";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(cors()).use(auth);
+router.use(cors());
 
 router.get(async (req, res) => {
   try {
@@ -24,7 +24,8 @@ router.get(async (req, res) => {
 
 export default router.handler({
   onError: (err: unknown, req: NextApiRequest, res: NextApiResponse) => {
-    const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+    const errorMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
     console.error("API Error:", err);
     res.status(500).json({ error: errorMessage });
   },

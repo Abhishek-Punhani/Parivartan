@@ -73,20 +73,22 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ onSubmit, isLoading }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const {title,description,location, time, type} = formData;
-console.log(formData,date);
+    const { title, description, location, time, type } = formData;
+    console.log(formData, date);
+
     if (
       !title ||
-    !description ||
-    !location ||
-    !date ||
-    !time ||
-    !type
+      !description ||
+      !location ||
+      !date ||
+      !time ||
+      !type ||
+      !file
     ) {
       toast.open({
         message: {
           heading: "Missing Information",
-          content: "Please fill in all required fields before submitting.",
+          content: "Please fill in all required fields, including an image, before submitting.",
         },
         duration: 5000,
         position: "top-center",
@@ -95,6 +97,7 @@ console.log(formData,date);
       setLoading(false);
       return;
     }
+
     const uploaded_file = await uploadFiles([{ file: file, type: "image" }]);
     const link = uploaded_file[0].file.secure_url;
     const newPost = {
@@ -103,7 +106,7 @@ console.log(formData,date);
       location,
       date,
       time,
-      eventType:type,
+      eventType: type,
       image: link,
     };
 
