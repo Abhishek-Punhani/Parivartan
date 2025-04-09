@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/card";
+import Chatbot from "@/components/chatbot";
 import Footer from "@/components/footer";
 import Navbar from "@/components/Navbar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/tabs";
@@ -70,7 +71,7 @@ export default function Education() {
                 <Card>
                   <div className="w-full h-48 overflow-hidden">
                     <img
-                      src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=800&q=80"
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgjVXLV_tDeT1Lf9z1A2bb_Vz6xrYE7ge-7g&s"
                       alt="Dead fish"
                       className="w-full h-full object-cover"
                     />
@@ -100,7 +101,7 @@ export default function Education() {
                 <Card>
                   <div className="w-full h-48 overflow-hidden">
                     <img
-                      src="https://images.unsplash.com/photo-1624806992066-5ffdef566d8d?w=800&q=80"
+                      src="https://mystemmfuture.org/wp-content/uploads/2021/11/1444195043-water-pollution-status-in-india.jpg"
                       alt="Economic impact"
                       className="w-full h-full object-cover"
                     />
@@ -864,7 +865,7 @@ export default function Education() {
             </TabsContent>
 
             {/* ChatBot */}
-            
+            <Chatbot />
           </Tabs>
         </div>
       </main>
